@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeMint 3.0 | AI Resume Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  
+  <header>
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div class="logo">Resume<span>Mint</span></div>
+      <nav style="display: flex; gap: 20px; align-items: center;">
+        <button id="darkModeToggle" class="btn btn-outline btn-small">🌙 Dark Mode</button>
+        <button id="startBuilderBtn" class="btn btn-primary">Create Resume Now</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Landing Page -->
+  <main id="landingPage">
+    <section class="hero">
+      <div class="container">
+        <h1>Create Professional Resume <br><span>in 2 Minutes</span></h1>
+        <p>ATS Friendly Templates + AI Suggestions. Build your career with confidence using our smart resume builder.</p>
+        <button class="btn btn-primary btn-lg start-btn">Get Started For Free</button>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="container">
+        <div class="section-title">
+          <h2>Why Choose ResumeMint?</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <i>⚡</i>
+            <h3>Fast Builder</h3>
+            <p>Intuitive interface that lets you build a resume in minutes, not hours.</p>
+          </div>
+          <div class="feature-card">
+            <i>🤖</i>
+            <h3>AI Content Improve</h3>
+            <p>Let Gemini AI polish your career objective and experience bullet points.</p>
+          </div>
+          <div class="feature-card">
+            <i>📄</i>
+            <h3>Multiple Templates</h3>
+            <p>Choose from 5 professional, ATS-optimized templates for different industries.</p>
+          </div>
+          <div class="feature-card">
+            <i>⬇️</i>
+            <h3>Instant PDF</h3>
+            <p>Download high-quality, print-ready PDF files directly to your device.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing">
+      <div class="container">
+        <div class="section-title">
+          <h2>Simple Pricing</h2>
+        </div>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <h3>Basic Plan</h3>
+            <div class="price">₹0 <span>/ forever</span></div>
+            <ul class="pricing-features">
+              <li>✅ Watermark on PDF</li>
+              <li>✅ All 6 Free Templates</li>
+              <li>✅ Standard AI Help</li>
+              <li>❌ Priority Support</li>
+            </ul>
+            <button class="btn btn-outline start-btn" style="width: 100%;">Choose Free</button>
+          </div>
+          <div class="pricing-card premium">
+            <h3>Pro Plan</h3>
+            <div class="price">₹499 <span>/ one-time</span></div>
+            <ul class="pricing-features">
+              <li>✅ No Watermark on PDF</li>
+              <li>✅ All 6 Professional Templates</li>
+              <li>✅ Advanced AI Suggestions</li>
+              <li>✅ Priority Support</li>
+            </ul>
+            <button id="buyPremiumBtn" class="btn btn-primary" style="width: 100%;">Go Pro</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Builder Section -->
+  <div id="builderSection" class="builder-container">
+    <div class="builder-form">
+      <button id="backToLanding" class="btn btn-outline btn-small" style="margin-bottom: 20px;">← Back</button>
+      
+      <div class="template-switcher">
+        <button class="template-btn active" data-template="classic">
+          <div class="template-thumb">📜</div>
+          Classic
+        </button>
+        <button class="template-btn" data-template="modern">
+          <div class="template-thumb">📱</div>
+          Modern
+        </button>
+        <button class="template-btn" data-template="minimal">
+          <div class="template-thumb">⚪</div>
+          Minimal
+        </button>
+        <button class="template-btn" data-template="creative">
+          <div class="template-thumb">🎨</div>
+          Creative
+        </button>
+        <button class="template-btn" data-template="executive">
+          <div class="template-thumb">👔</div>
+          Executive
+        </button>
+        <button class="template-btn" data-template="compact">
+          <div class="template-thumb">📏</div>
+          Compact
+        </button>
+      </div>
+
+      <div class="form-section">
+        <h3>Personal Details</h3>
+        <div class="form-group">
+          <label>Profile Photo</label>
+          <div class="photo-upload-container">
+            <div id="photoPreview" class="photo-preview-box">
+              <span>No Photo</span>
+            </div>
+            <div class="photo-controls">
+              <input type="file" id="photoInput" accept="image/*" style="display: none;">
+              <button type="button" class="btn btn-outline btn-small" onclick="document.getElementById('photoInput').click()">Upload Photo</button>
+              <button type="button" id="removePhotoBtn" class="btn btn-outline btn-small" style="display: none; color: #ef4444; border-color: #ef4444;">Remove</button>
+            </div>
+          </div>
+          <div id="photoSuggestions" class="photo-suggestions" style="display: none;">
+            <strong>💡 Pro Tips:</strong>
+            <ul id="suggestionsList"></ul>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="fullName" class="form-control" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="phone" class="form-control" placeholder="+91 9876543210">
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="address" class="form-control" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label>LinkedIn / Portfolio</label>
+          <input type="text" id="linkedin" class="form-control" placeholder="linkedin.com/in/johndoe">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3>Career Objective</h3>
+          <button id="improveObjectiveBtn" class="btn btn-outline btn-small">✨ AI Improve</button>
+        </div>
+        <div class="form-group">
+          <textarea id="objective" class="form-control" rows="4" placeholder="Brief summary of your career goals..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Experience</h3>
+        <div id="experienceContainer"></div>
+        <button id="addExperienceBtn" class="btn btn-outline btn-small">+ Add Experience</button>
+      </div>
+
+      <div class="form-section" style="margin-top: 20px;">
+        <h3>Education</h3>
+        <div id="educationContainer"></div>
+        <button id="addEducationBtn" class="btn btn-outline btn-small">+ Add Education</button>
+      </div>
+
+      <div class="form-section" style="margin-top: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3>Skills</h3>
+          <button id="improveSkillsBtn" class="btn btn-outline btn-small">✨ AI Improve</button>
+        </div>
+        <div class="form-group">
+          <textarea id="skills" class="form-control" rows="3" placeholder="React, Node.js, Project Management..."></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; display: flex; gap: 20px;">
+        <button id="downloadPdfBtn" class="btn btn-primary" style="flex: 1;">Download PDF</button>
+        <button id="saveDraftBtn" class="btn btn-outline">Save Draft</button>
+      </div>
+    </div>
+
+    <div class="builder-preview">
+      <div id="previewContainer" class="preview-paper">
+        <div id="resume-preview" class="template-classic">
+          <div class="resume-header">
+            <div id="prev-photo-container" class="prev-photo-container"></div>
+            <div class="header-info">
+              <h1 id="prev-name">Your Name</h1>
+              <div id="prev-contact" class="resume-item-subtitle">Email | Phone | Address</div>
+            </div>
+          </div>
+          <div class="resume-body">
+            <div id="prev-objective-section" class="resume-section">
+              <div class="resume-section-title">Objective</div>
+              <p id="prev-objective"></p>
+            </div>
+            <div id="prev-experience-section" class="resume-section">
+              <div class="resume-section-title">Experience</div>
+              <div id="prev-experience-list"></div>
+            </div>
+            <div id="prev-education-section" class="resume-section">
+              <div class="resume-section-title">Education</div>
+              <div id="prev-education-list"></div>
+            </div>
+            <div id="prev-skills-section" class="resume-section">
+              <div class="resume-section-title">Skills</div>
+              <p id="prev-skills"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/script.js"></script>
+</body>
+</html>
