@@ -16,10 +16,10 @@
 <body>
   
   <header>
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+    <div class="container header-container">
       <div class="logo">Resume<span>Mint</span></div>
-      <nav style="display: flex; gap: 20px; align-items: center;">
-        <button id="darkModeToggle" class="btn btn-outline btn-small">🌙 Dark Mode</button>
+      <nav class="header-nav">
+        <button id="darkModeToggle" class="btn btn-outline btn-small">🌙 <span class="hide-mobile">Dark Mode</span></button>
         <button id="startBuilderBtn" class="btn btn-primary">Create Resume Now</button>
       </nav>
     </div>
@@ -100,7 +100,12 @@
 
   <!-- Builder Section -->
   <div id="builderSection" class="builder-container">
-    <div class="builder-form">
+    <div class="mobile-tabs">
+      <button class="tab-btn active" data-tab="form">Edit Details</button>
+      <button class="tab-btn" data-tab="preview">View Preview</button>
+    </div>
+
+    <div id="builderForm" class="builder-form">
       <button id="backToLanding" class="btn btn-outline btn-small" style="margin-bottom: 20px;">← Back</button>
       
       <div class="template-switcher">

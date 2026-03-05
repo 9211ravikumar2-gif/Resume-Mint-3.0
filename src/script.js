@@ -106,6 +106,32 @@ function setupEventListeners() {
   // Photo Upload
   photoInput.addEventListener('change', handlePhotoUpload);
   removePhotoBtn.addEventListener('click', removePhoto);
+
+  // Mobile Tabs
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const builderForm = document.getElementById('builderForm');
+  const builderPreview = document.querySelector('.builder-preview');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      
+      // Update Tab UI
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // Update Content UI
+      if (tab === 'form') {
+        builderForm.classList.remove('hidden-mobile');
+        builderPreview.classList.remove('show-mobile');
+      } else {
+        builderForm.classList.add('hidden-mobile');
+        builderPreview.classList.add('show-mobile');
+        // Trigger resize to fix any layout issues in preview
+        window.dispatchEvent(new Event('resize'));
+      }
+    });
+  });
 }
 
 function handlePhotoUpload(e) {

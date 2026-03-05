@@ -35,15 +35,58 @@ body {
 
 /* Header & Navigation */
 header {
-  height: 80px;
+  height: auto;
+  min-height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   background: white;
   z-index: 100;
+  padding: 10px 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .header-container {
+    flex-direction: column;
+    padding: 10px 20px;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .header-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .hide-mobile {
+    display: none;
+  }
+  
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
 }
 
 .logo {
@@ -238,11 +281,64 @@ header {
   height: calc(100vh - 80px);
 }
 
+.mobile-tabs {
+  display: none; /* Hidden by default on desktop */
+}
+
+@media (max-width: 1024px) {
+  .builder-container {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow-x: hidden;
+  }
+  
+  .mobile-tabs {
+    display: flex;
+    background: white;
+    position: sticky;
+    top: 80px; /* Below header */
+    z-index: 90;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .tab-btn {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-bottom: 3px solid transparent;
+  }
+  
+  .tab-btn.active {
+    color: var(--accent-blue);
+    border-bottom-color: var(--accent-blue);
+  }
+}
+
 .builder-form {
   padding: 40px;
   overflow-y: auto;
   background: #f8fafc;
   border-right: 1px solid var(--border-color);
+}
+
+@media (max-width: 1024px) {
+  .builder-form {
+    display: block; /* Default visible on mobile */
+  }
+  
+  .builder-form.hidden-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .builder-form {
+    padding: 20px;
+  }
 }
 
 .builder-preview {
@@ -253,12 +349,54 @@ header {
   justify-content: center;
 }
 
+@media (max-width: 1024px) {
+  .builder-preview {
+    display: none; /* Hidden by default on mobile, shown via tabs */
+    padding: 20px;
+    background: #f1f5f9;
+  }
+  
+  .builder-preview.show-mobile {
+    display: flex;
+  }
+}
+
 .preview-paper {
   background: white;
   width: 210mm;
   min-height: 297mm;
   box-shadow: var(--shadow-lg);
   position: relative;
+  transform-origin: top center;
+}
+
+@media (max-width: 1024px) {
+  .preview-paper {
+    width: 210mm; /* Keep original width for scaling */
+    transform: scale(0.4);
+    margin: -300px 0; /* Adjust for scale */
+  }
+}
+
+@media (max-width: 850px) {
+  .preview-paper {
+    transform: scale(0.35);
+    margin: -350px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .preview-paper {
+    transform: scale(0.3);
+    margin: -400px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .preview-paper {
+    transform: scale(0.25);
+    margin: -450px 0;
+  }
 }
 
 /* Form Elements */
@@ -321,6 +459,27 @@ header {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 12px;
   margin-bottom: 30px;
+}
+
+@media (max-width: 640px) {
+  .template-switcher {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    gap: 10px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .template-btn {
+    flex: 0 0 100px;
+    scroll-snap-align: start;
+  }
+  
+  .template-thumb {
+    height: 50px;
+    font-size: 16px;
+  }
 }
 
 .template-btn {
@@ -820,20 +979,19 @@ header {
     width: 100px !important;
     height: 100px !important;
   }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+  
+  .hero p {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 1024px) {
-  .builder-container {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-  
   .builder-preview {
-    display: none; /* Hide preview on mobile builder view */
-  }
-  
-  .hero h1 {
-    font-size: 36px;
+    display: block; /* Show preview on mobile, it will stack below form */
   }
 }
 
