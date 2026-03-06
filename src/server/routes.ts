@@ -3,6 +3,8 @@ import Razorpay from "razorpay";
 import puppeteer from "puppeteer";
 import dotenv from "dotenv";
 
+import { registerAiRoutes } from "./ai-improve.ts";
+
 dotenv.config();
 
 const razorpay = new Razorpay({
@@ -11,6 +13,9 @@ const razorpay = new Razorpay({
 });
 
 export function registerRoutes(app: Express) {
+  // Register AI Routes
+  registerAiRoutes(app);
+
   // Razorpay Create Order
   app.post("/api/create-order", async (req, res) => {
     try {

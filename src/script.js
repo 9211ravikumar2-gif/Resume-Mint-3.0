@@ -266,8 +266,11 @@ window.improveExperience = async (index) => {
   const content = `Company: ${exp.company || 'N/A'}\nRole: ${exp.title || 'N/A'}\nDuration: ${exp.date || 'N/A'}\nDescription: ${exp.description || ''}`;
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API Key missing');
+    const apiKey = (typeof process !== 'undefined' && process.env.GEMINI_API_KEY) || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("API Key missing. Please set GEMINI_API_KEY or VITE_GEMINI_API_KEY.");
+      throw new Error('API Key missing. Please check your environment variables.');
+    }
     
     const ai = new GoogleGenAI({ apiKey });
     const prompt = `
@@ -297,8 +300,27 @@ window.improveExperience = async (index) => {
       updatePreview();
     }
   } catch (error) {
-    console.error("Gemini Error:", error);
-    alert('AI Improvement failed. Please try again.');
+    console.error("Gemini Frontend Error:", error);
+    
+    // Fallback to backend
+    try {
+      const res = await fetch('/api/ai-improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      if (data.text) {
+        resumeData.experience[index].description = data.text;
+        renderDynamicSection('experience');
+        updatePreview();
+        return;
+      }
+    } catch (fallbackError) {
+      console.error("AI Fallback Error:", fallbackError);
+    }
+    
+    alert('AI Improvement failed. Please check your connection and try again.');
   } finally {
     btn.innerText = originalText;
     btn.disabled = false;
@@ -405,8 +427,11 @@ async function improveObjective() {
   btn.disabled = true;
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API Key missing');
+    const apiKey = (typeof process !== 'undefined' && process.env.GEMINI_API_KEY) || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("API Key missing. Please set GEMINI_API_KEY or VITE_GEMINI_API_KEY.");
+      throw new Error('API Key missing. Please check your environment variables.');
+    }
 
     const ai = new GoogleGenAI({ apiKey });
     const prompt = `
@@ -436,7 +461,26 @@ async function improveObjective() {
       updatePreview();
     }
   } catch (error) {
-    console.error("Gemini Error:", error);
+    console.error("Gemini Frontend Error:", error);
+    
+    // Fallback to backend
+    try {
+      const res = await fetch('/api/ai-improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      if (data.text) {
+        resumeData.objective = data.text;
+        document.getElementById('objective').value = data.text;
+        updatePreview();
+        return;
+      }
+    } catch (fallbackError) {
+      console.error("AI Fallback Error:", fallbackError);
+    }
+    
     alert('AI Improvement failed. Please check your connection and try again.');
   } finally {
     btn.innerText = '✨ AI Improve';
@@ -453,8 +497,11 @@ async function improveSkills() {
   btn.disabled = true;
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey) throw new Error('API Key missing');
+    const apiKey = (typeof process !== 'undefined' && process.env.GEMINI_API_KEY) || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error("API Key missing. Please set GEMINI_API_KEY or VITE_GEMINI_API_KEY.");
+      throw new Error('API Key missing. Please check your environment variables.');
+    }
 
     const ai = new GoogleGenAI({ apiKey });
     const prompt = `
@@ -483,7 +530,26 @@ async function improveSkills() {
       updatePreview();
     }
   } catch (error) {
-    console.error("Gemini Error:", error);
+    console.error("Gemini Frontend Error:", error);
+    
+    // Fallback to backend
+    try {
+      const res = await fetch('/api/ai-improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      if (data.text) {
+        resumeData.skills = data.text;
+        document.getElementById('skills').value = data.text;
+        updatePreview();
+        return;
+      }
+    } catch (fallbackError) {
+      console.error("AI Fallback Error:", fallbackError);
+    }
+    
     alert('AI Improvement failed. Please check your connection and try again.');
   } finally {
     btn.innerText = '✨ AI Improve';
