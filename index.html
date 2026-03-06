@@ -12,6 +12,7 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
   
@@ -100,11 +101,6 @@
 
   <!-- Builder Section -->
   <div id="builderSection" class="builder-container">
-    <div class="mobile-tabs">
-      <button class="tab-btn active" data-tab="form">Edit Details</button>
-      <button class="tab-btn" data-tab="preview">View Preview</button>
-    </div>
-
     <div id="builderForm" class="builder-form">
       <button id="backToLanding" class="btn btn-outline btn-small" style="margin-bottom: 20px;">← Back</button>
       
@@ -209,12 +205,15 @@
       </div>
 
       <div style="margin-top: 40px; display: flex; gap: 20px;">
-        <button id="downloadPdfBtn" class="btn btn-primary" style="flex: 1;">Download PDF</button>
+        <button id="downloadPdfBtn" class="btn btn-primary" style="flex: 1;"><span class="hide-mobile">Download PDF</span><span class="show-mobile">Preview & Download</span></button>
         <button id="saveDraftBtn" class="btn btn-outline">Save Draft</button>
       </div>
     </div>
 
     <div class="builder-preview">
+      <div class="preview-actions-mobile">
+        <button id="downloadPdfBtnMobile" class="btn btn-primary" style="width: 100%;">Download PDF Now</button>
+      </div>
       <div id="previewContainer" class="preview-paper">
         <div id="resume-preview" class="template-classic">
           <div class="resume-header">
@@ -246,6 +245,12 @@
       </div>
     </div>
   </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 ResumeMint. All rights reserved.</p>
+    </div>
+  </footer>
 
   <script type="module" src="/src/script.js"></script>
 </body>

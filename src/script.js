@@ -87,6 +87,9 @@ function setupEventListeners() {
 
   // PDF Download
   document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
+  if (document.getElementById('downloadPdfBtnMobile')) {
+    document.getElementById('downloadPdfBtnMobile').addEventListener('click', downloadPdf);
+  }
 
   // Payment
   document.getElementById('buyPremiumBtn').addEventListener('click', handlePayment);
@@ -106,32 +109,6 @@ function setupEventListeners() {
   // Photo Upload
   photoInput.addEventListener('change', handlePhotoUpload);
   removePhotoBtn.addEventListener('click', removePhoto);
-
-  // Mobile Tabs
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  const builderForm = document.getElementById('builderForm');
-  const builderPreview = document.querySelector('.builder-preview');
-
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.tab;
-      
-      // Update Tab UI
-      tabBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      
-      // Update Content UI
-      if (tab === 'form') {
-        builderForm.classList.remove('hidden-mobile');
-        builderPreview.classList.remove('show-mobile');
-      } else {
-        builderForm.classList.add('hidden-mobile');
-        builderPreview.classList.add('show-mobile');
-        // Trigger resize to fix any layout issues in preview
-        window.dispatchEvent(new Event('resize'));
-      }
-    });
-  });
 }
 
 function handlePhotoUpload(e) {
@@ -289,7 +266,10 @@ window.improveExperience = async (index) => {
   const content = `Company: ${exp.company || 'N/A'}\nRole: ${exp.title || 'N/A'}\nDuration: ${exp.date || 'N/A'}\nDescription: ${exp.description || ''}`;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API Key missing');
+    
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = `
       You are an expert HR resume consultant.
       Rewrite the following work experience professionally:
@@ -425,7 +405,10 @@ async function improveObjective() {
   btn.disabled = true;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API Key missing');
+
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = `
       You are a professional resume writer.
       Improve the following career objective to make it:
@@ -470,7 +453,10 @@ async function improveSkills() {
   btn.disabled = true;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API Key missing');
+
+    const ai = new GoogleGenAI({ apiKey });
     const prompt = `
       You are a professional resume writer.
       Improve the following skills list to make it:
@@ -507,61 +493,59 @@ async function improveSkills() {
 
 async function downloadPdf() {
   const btn = document.getElementById('downloadPdfBtn');
-  const form = document.querySelector('.builder-form');
-  const preview = document.querySelector('.builder-preview');
-  const container = document.querySelector('.builder-container');
+  const mobileBtn = document.getElementById('downloadPdfBtnMobile');
   
-  btn.innerText = 'Generating PDF...';
+  const originalBtnText = btn.innerText;
+  const originalMobileBtnText = mobileBtn ? mobileBtn.innerText : '';
+  
+  btn.innerText = 'Generating...';
+  if (mobileBtn) mobileBtn.innerText = 'Generating...';
   btn.disabled = true;
+  if (mobileBtn) mobileBtn.disabled = true;
+
+  // 1. Add export class to body to force A4 dimensions and hide UI
+  document.body.classList.add('exporting-pdf');
+  
+  const element = document.getElementById('resume-preview');
+  const filename = `Resume_${resumeData.fullName.replace(/\s+/g, '_') || 'Mint'}.pdf`;
+
+  // 2. Configure html2pdf options
+  const opt = {
+    margin: 0,
+    filename: filename,
+    image: { type: 'jpeg', quality: 1.0 },
+    html2canvas: { 
+      scale: 3, // High quality scale as requested
+      useCORS: true, 
+      letterRendering: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: 794, // Approx 210mm in px at 96dpi, ensures consistent rendering
+    },
+    jsPDF: { 
+      unit: 'mm', 
+      format: 'a4', 
+      orientation: 'portrait',
+      compress: true
+    }
+  };
 
   try {
-    // 1. Hide form while generating PDF
-    form.style.display = 'none';
-    container.style.gridTemplateColumns = '1fr';
-    preview.style.padding = '0';
-    preview.style.background = 'white';
-    
-    const element = document.getElementById('resume-preview');
-    
-    // 2. Use html2canvas + jsPDF
-    const options = {
-      scale: 3, // High quality scaling
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: "#ffffff",
-      logging: false
-    };
-
-    const canvas = await html2canvas(element, options);
-    const imgData = canvas.toDataURL('image/png');
-    
-    // 3. Maintain A4 ratio (210mm x 297mm)
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    
-    // Calculate dimensions to fit A4 perfectly
-    const imgWidth = pdfWidth;
-    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-    
-    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-    
-    // 4. Automatically download file as Resume.pdf
-    pdf.save(`Resume_${resumeData.fullName.replace(/\s+/g, '_') || 'Mint'}.pdf`);
-
+    // 3. Generate PDF using html2pdf
+    await html2pdf().set(opt).from(element).save();
   } catch (error) {
     console.error('PDF Error:', error);
     alert('PDF Generation failed: ' + error.message);
   } finally {
-    // 5. Restore UI
-    form.style.display = 'block';
-    container.style.gridTemplateColumns = '1fr 1fr';
-    preview.style.padding = '40px';
-    preview.style.background = '#cbd5e1';
+    // 4. Cleanup: Remove export class and restore UI
+    document.body.classList.remove('exporting-pdf');
     
-    btn.innerText = 'Download PDF';
+    btn.innerText = originalBtnText;
+    if (mobileBtn) mobileBtn.innerText = originalMobileBtnText;
     btn.disabled = false;
+    if (mobileBtn) mobileBtn.disabled = false;
     
+    // Trigger a resize to fix any layout issues caused by the temporary class
     window.dispatchEvent(new Event('resize'));
   }
 }
